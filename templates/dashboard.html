@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Doorbell Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+
+<script>
+// auto-refresh every 1 second without reloading the entire page
+function updateData() {
+    fetch('/status')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("dist").innerText = data.distance;
+            document.getElementById("ir").innerText = data.ir;
+            document.getElementById("pir").innerText = data.pir;
+            document.getElementById("alert").innerText = data.alert || "None";
+            document.getElementById("motion").innerText = data.last_motion || "No motion yet";
+        })
+        .catch(err => console.error("Fetch error:", err));
+}
+
+setInterval(updateData, 1000);
+</script>
+
+</head>
+<body>
+
+<h1>Smart Doorbell Dashboard</h1>
+
+<div class="container">
+
+    <div class="card">
+        <div class="label">Ultrasonic Distance (cm)</div>
+        <div class="value" id="dist">{{ data.distance }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">IR Sensor</div>
+        <div class="value" id="ir">{{ data.ir }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">PIR Motion</div>
+        <div class="value" id="pir">{{ data.pir }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Alert Type</div>
+        <div class="value" id="alert">{{ data.alert }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Last Motion Timestamp</div>
+        <div class="value" id="motion">{{ data.last_motion }}</div>
+    </div>
+
+</div>
+
+<div id="refresh-indicator">Updating live...</div>
+
+</body>
+</html>
